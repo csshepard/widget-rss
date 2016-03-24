@@ -1,6 +1,36 @@
 angular.module("risevision.widget.rss.settings")
-  .controller("rssSettingsController", ["$scope", "$log",
-    function ($scope/*, $log*/) {
+  .controller("rssSettingsController", ["$scope", "$log", "feedValidator",
+    function ($scope, $log, feedValidator) {
+
+      $scope.feedValid = true;
+
+      $scope.validateFeed = function() {
+        feedValidator.isValid($scope.settings.additionalParams.url).then(function(value){
+          $scope.feedValid = value;
+        });
+      };
+
+      $scope.$on("urlFieldBlur", function () {
+        if ($scope.settingsForm.rssUrl.$valid) {
+          $scope.validateFeed();
+        }
+      });
+
+      $scope.$watch("settings.additionalParams.url", function (newVal, oldVal) {
+        if (typeof oldVal === "undefined" && newVal && newVal !== "") {
+          // previously saved settings are being shown, ensure to check if feed is w3c valid
+          if ($scope.settingsForm.rssUrl.$valid) {
+            $scope.validateFeed();
+          }
+        }
+        else {
+          if (typeof newVal !== "undefined") {
+            // ensure warning message doesn't get shown while url field is receiving input
+            $scope.feedValid = true;
+          }
+        }
+
+      });
 
       $scope.$watch("settings.additionalParams.dataSelection.showTitle", function (value) {
         if (typeof value !== "undefined" && value !== "" && !value) {
@@ -27,6 +57,9 @@ angular.module("risevision.widget.rss.settings")
       });
 
     }])
+  .filter("escape", function() {
+    return window.encodeURIComponent;
+  })
   .value("defaultSettings", {
     "params": {},
     "additionalParams": {
