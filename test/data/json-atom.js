@@ -11,7 +11,7 @@ var jsonAtom = [
     "author": null,
     "comments": null,
     "origlink": null,
-    "image": {},
+    "image": {"url": "http://image.image.test1/"},
     "source": {},
     "categories": [],
     "enclosures": [
@@ -122,7 +122,7 @@ var jsonAtom = [
     "author": null,
     "comments": null,
     "origlink": null,
-    "image": {},
+    "image": {"url": "http://image.image.test2/"},
     "source": {},
     "categories": [],
     "enclosures": [
@@ -233,7 +233,7 @@ var jsonAtom = [
     "author": null,
     "comments": null,
     "origlink": null,
-    "image": {},
+    "image": {"url": "http://image.image.test3/"},
     "source": {},
     "categories": [],
     "enclosures": [
@@ -344,7 +344,7 @@ var jsonAtom = [
     "author": null,
     "comments": null,
     "origlink": null,
-    "image": {},
+    "image": {"url": "http://image.image.test4/"},
     "source": {},
     "categories": [],
     "enclosures": [
