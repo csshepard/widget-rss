@@ -64,14 +64,16 @@ RiseVision.RSS = (function (document, gadgets) {
     }, 5000);
   }
 
-  function _init() {
+  /* Show message that the feed is loading. */
+  function _showLoadingMessage() {
     _message = new RiseVision.Common.Message(document.getElementById("container"),
       document.getElementById("messageContainer"));
 
-    // show wait message
     _message.show("Please wait while your feed is loaded.");
+  }
 
-    // Load fonts.
+  /* Load Google and custom fonts. */
+  function _loadFonts() {
     var fontSettings = [
       {
         "class": "story_font-style",
@@ -101,12 +103,11 @@ RiseVision.RSS = (function (document, gadgets) {
     }
 
     RiseVision.Common.Utilities.loadFonts(fontSettings);
+  }
 
-    // create and initialize the rss module instance
+  function _initRiseRSS() {
     _riserss = new RiseVision.RSS.RiseRSS(_additionalParams);
     _riserss.init();
-
-    _ready();
   }
 
   /* Load the layout file. */
@@ -129,24 +130,58 @@ RiseVision.RSS = (function (document, gadgets) {
     // Load the layout and add it to the DOM.
     $.get(url)
       .done(function(data) {
-        $("#container").append(data);
-        _init();
+        _onLayoutLoaded(data);
       })
       .fail(function() {
-        _message = new RiseVision.Common.Message(document.getElementById("container"),
-          document.getElementById("messageContainer"));
-
-        _message.show("The layout file could not be loaded.");
-
-        logEvent({
-          "event": "error",
-          "event_details": "layout not loaded",
-          "error_details": url,
-          "feed_url": _additionalParams.url
-        }, true);
-
-        _ready();
+        _onLayoutNotLoaded(url);
       });
+  }
+
+  /* Layout file was loaded successfully. */
+  function _onLayoutLoaded(data) {
+    $("#container").append(data);
+    _showLoadingMessage();
+    _loadFonts();
+    _initRiseRSS();
+    _ready();
+  }
+
+  /* Layout file failed to load. */
+  function _onLayoutNotLoaded(url) {
+    _message = new RiseVision.Common.Message(document.getElementById("container"),
+      document.getElementById("messageContainer"));
+
+    _message.show("The layout file could not be loaded.");
+
+    logEvent({
+      "event": "error",
+      "event_details": "layout not loaded",
+      "error_details": url,
+      "feed_url": _additionalParams.url
+    }, true);
+
+    _ready();
+  }
+
+  function _isHorizontalScroll() {
+    if (!_additionalParams.transition) {
+      return false;
+    }
+    else if ((_additionalParams.transition.type === "scroll") && (_additionalParams.transition.direction === "left")) {
+      return true;
+    }
+    else {
+      return false;
+    }
+  }
+
+  function _initHorizontalScroll() {
+    document.getElementById("container").style.display = "none";
+    document.getElementById("scroller").style.display = "block";
+
+    _showLoadingMessage();
+    _initRiseRSS();
+    _ready();
   }
 
   /*
@@ -169,7 +204,7 @@ RiseVision.RSS = (function (document, gadgets) {
   }
 
   function onRiseRSSInit(feed) {
-    _content = new RiseVision.RSS.Content(_additionalParams);
+    _content = new RiseVision.RSS.Content(_prefs, _additionalParams);
 
     if (feed.items && feed.items.length > 0) {
       // remove a message previously shown
@@ -213,7 +248,7 @@ RiseVision.RSS = (function (document, gadgets) {
       if (_errorFlag) {
         if (!_content) {
           // create content module instance
-          _content = new RiseVision.RSS.Content(_additionalParams);
+          _content = new RiseVision.RSS.Content(_prefs, _additionalParams);
         }
 
         _message.hide();
@@ -268,7 +303,12 @@ RiseVision.RSS = (function (document, gadgets) {
     document.getElementById("container").style.width = _additionalParams.width + "px";
     document.getElementById("container").style.height = _additionalParams.height + "px";
 
-    _loadLayout();
+    if (_isHorizontalScroll()) {
+      _initHorizontalScroll();
+    }
+    else {
+      _loadLayout();
+    }
   }
 
   function showError(message) {

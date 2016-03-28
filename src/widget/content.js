@@ -3,7 +3,7 @@
 var RiseVision = RiseVision || {};
 RiseVision.RSS = RiseVision.RSS || {};
 
-RiseVision.RSS.Content = function (params) {
+RiseVision.RSS.Content = function (prefs, params) {
 
   "use strict";
 
@@ -29,28 +29,6 @@ RiseVision.RSS.Content = function (params) {
     }
   }
 
-  function _getStory(item) {
-    var story = null;
-
-    if (_.has(item, "description")) {
-      story = item.description;
-    }
-
-    return story;
-  }
-
-  function _getAuthor(item) {
-    var author = null;
-
-    if (item.author) {
-      author = item.author;
-    } else if (_.has(item, "dc:creator")) {
-      author = item["dc:creator"]["#"];
-    }
-
-    return author;
-  }
-
   function _getImageUrl(item) {
     var imageUrl = null;
 
@@ -74,20 +52,6 @@ RiseVision.RSS.Content = function (params) {
     }
 
     return urls;
-  }
-
-  function _getDate(item) {
-    var pubdate = item.date, formattedDate = null;
-
-    if (pubdate) {
-      pubdate = new Date(pubdate);
-      var options = {
-        year: "numeric", month: "long", day: "numeric"
-      };
-      formattedDate = pubdate.toLocaleDateString("en-us", options);
-    }
-
-    return formattedDate;
   }
 
   function _getImageDimensions($image, item) {
@@ -144,10 +108,11 @@ RiseVision.RSS.Content = function (params) {
   }
 
   function _getTemplate(item, index) {
-    var story = _getStory(item),
-      author = _getAuthor(item),
+    var title = getTitle(item),
+      story = getStory(item),
+      author = getAuthor(item),
       imageUrl = _getImageUrl(item),
-      date = _getDate(item),
+      date = getDate(item),
       template = document.querySelector("#layout").content,
       $content = $(template.cloneNode(true)),
       $story, clone, image;
@@ -159,7 +124,7 @@ RiseVision.RSS.Content = function (params) {
     }
     else {
       $content.find(".headline").css("textAlign", params.headline.fontStyle.align);
-      $content.find(".headline a").text(_utils.stripScripts(item.title));
+      $content.find(".headline a").text(title);
     }
 
     var removeSeparator = false;
@@ -214,14 +179,7 @@ RiseVision.RSS.Content = function (params) {
     else {
       $story = $content.find(".story");
       $story.css("textAlign", params.story.fontStyle.align);
-      story = _utils.stripScripts(story);
-
-      if (params.dataSelection.showDescription === "snippet") {
-        $story.html(_utils.truncate($("<div/>").html(story).text(), params.dataSelection.snippetLength));
-      }
-      else {
-        $story.html(story);
-      }
+      $story.html(story);
 
       // apply the story font styling to child elements as well.
       $story.find("p").addClass("story_font-style");
@@ -286,14 +244,23 @@ RiseVision.RSS.Content = function (params) {
         // legacy, backwards compatible
         params.transition = {
           type: "none",
-          duration: 10
+          duration: 10,
+          direction: "up"
         };
       }
 
       if (params.transition.type === "none" || params.transition.type === "fade") {
         _transition = new RiseVision.RSS.TransitionNoScroll(params, this);
       }
-      else if (params.transition.type === "scroll" || params.transition.type === "page") {
+      else if (params.transition.type === "scroll") {
+        if (params.transition.direction === "up") {
+          _transition = new RiseVision.RSS.TransitionVerticalScroll(params, this);
+        }
+        else if (params.transition.direction === "left") {
+          _transition = new RiseVision.RSS.HorizontalScroll(prefs, params, this);
+        }
+      }
+      else if (params.transition.type === "page") {
         _transition = new RiseVision.RSS.TransitionVerticalScroll(params, this);
       }
     }
@@ -301,6 +268,56 @@ RiseVision.RSS.Content = function (params) {
     loadImages(function () {
       _transition.init(_items);
     });
+  }
+
+  function getAuthor(item) {
+    var author = null;
+
+    if (item.author) {
+      author = item.author;
+    } else if (_.has(item, "dc:creator")) {
+      author = item["dc:creator"]["#"];
+    }
+
+    return author;
+  }
+
+   function getDate(item) {
+    var pubdate = item.date, formattedDate = null;
+
+    if (pubdate) {
+      pubdate = new Date(pubdate);
+      var options = {
+        year: "numeric", month: "long", day: "numeric"
+      };
+      formattedDate = pubdate.toLocaleDateString("en-us", options);
+    }
+
+    return formattedDate;
+  }
+
+  function getStory(item) {
+    var story = null;
+
+    if (_.has(item, "description")) {
+      story = _utils.stripScripts(item.description);
+    }
+
+    if (params.dataSelection.showDescription === "snippet") {
+      story = _utils.truncate($("<div/>").html(story).text(), params.dataSelection.snippetLength);
+    }
+
+    return story;
+  }
+
+  function getTitle(item) {
+    var title = null;
+
+    if (item.title) {
+      title = _utils.stripScripts(item.title);
+    }
+
+    return title;
   }
 
   function loadImages(cb) {
@@ -318,6 +335,12 @@ RiseVision.RSS.Content = function (params) {
     }
   }
 
+  function play() {
+    if (_transition) {
+      _transition.start();
+    }
+  }
+
   function reset() {
     if (_transition) {
       _transition.stop();
@@ -325,12 +348,6 @@ RiseVision.RSS.Content = function (params) {
     }
 
     _items = [];
-  }
-
-  function play() {
-    if (_transition) {
-      _transition.start();
-    }
   }
 
   function showItem(index) {
@@ -347,6 +364,10 @@ RiseVision.RSS.Content = function (params) {
 
   return {
     init: init,
+    getAuthor: getAuthor,
+    getDate: getDate,
+    getStory: getStory,
+    getTitle: getTitle,
     loadImages: loadImages,
     pause: pause,
     play: play,
