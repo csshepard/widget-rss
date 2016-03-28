@@ -58,7 +58,8 @@
 
           <!-- RSS URL-->
           <div class="form-group">
-            <url-field id="main" ng-model="myurlfield" url="settings.additionalParams.url" valid init-empty></url-field>
+            <url-field id="rssUrl" name="rssUrl" ng-model="myurlfield" url="settings.additionalParams.url" valid init-empty></url-field>
+            <p ng-if="!feedValid" class="text-danger">{{ "widget-rss.warning.message" | translate }} <a ng-href="https://validator.w3.org/feed/check.cgi?url={{settings.additionalParams.url | escape}}" target="_blank">{{ "widget-rss.warning.anchor" | translate}}</a>.</p>
           </div><!-- END RSS URL-->
 
           <div class="row">
