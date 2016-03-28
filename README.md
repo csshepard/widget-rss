@@ -5,7 +5,7 @@
 The RSS Widget allows you to add an RSS feed directly into your Presentation. You can configure how it will look and also use a custom layout.
 
 
-Project Name works in conjunction with [Rise Vision](http://www.risevision.com), the [digital signage management application](http://rva.risevision.com/) that runs on [Google Cloud](https://cloud.google.com).
+RSS Widget works in conjunction with [Rise Vision](http://www.risevision.com), the [digital signage management application](http://rva.risevision.com/) that runs on [Google Cloud](https://cloud.google.com).
 
 At this time Chrome is the only browser that this project and Rise Vision supports.
 
@@ -22,7 +22,7 @@ At this time Chrome is the only browser that this project and Rise Vision suppor
 
 ### Custom Layout
 
-For using custom layout you will need to have a template, like the one shown bellow, hosted somewhere accessible through the internet. The RSS content placement on the template is based on the element classes. Thus, you can change the elements as you wish as long as the classes are maintained.
+For using custom layout you will need to have a template, like the one shown below, hosted somewhere accessible through the internet. The RSS content placement on the template is based on the element classes. Thus, you can change the elements as you wish as long as the classes are maintained.
 Moreover, you can also add your own styling through inline css. Once you have your template ready you can set its url on the widget settings under 
 Custom Layout URL.
 
