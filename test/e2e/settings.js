@@ -103,6 +103,10 @@
       it("Should set default for Separator color", function () {
         expect(element(by.model("settings.additionalParams.separator.color")).getAttribute("value")).to.eventually.equal("rgb(238,238,238)");
       });
+
+      it("Should not show warning message regarding RSS feed", function () {
+        expect(element(by.css(".text-danger")).isPresent()).to.eventually.be.false;
+      });
     });
 
     describe("Visibility", function() {
@@ -110,6 +114,14 @@
         element(by.css("input[type='radio'][value='custom']")).click();
 
         expect(element(by.id("custom-layout")).isDisplayed()).to.eventually.be.true;
+      });
+    });
+
+    describe("Warning message", function() {
+      it("should not show warning when URL Field is receiving input", function() {
+        element(by.css("#rssUrl input[name='url']")).sendKeys("http://test.com/rss");
+
+        expect(element(by.css(".text-danger")).isPresent()).to.eventually.be.false;
       });
     });
 
