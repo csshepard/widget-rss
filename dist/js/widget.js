@@ -2656,15 +2656,23 @@ RiseVision.RSS.HorizontalScroll = function (params, content) {
    */
 
   function _initScroller() {
+    var scrollerElem = document.querySelector("#scroller");
+
+    _scroller = new RiseVision.Common.Scroller(params);
+
+    scrollerElem.addEventListener("ready", _onScrollerReady);
+    scrollerElem.addEventListener("done", _onScrollerDone);
+
+    _scroller.init(_getItems());
+  }
+
+  function _getItems() {
     var title = "",
       author = "",
       date = "",
       story = "",
       item = null,
-      items = [],
-      scrollerElem = document.querySelector("#scroller");
-
-    _scroller = new RiseVision.Common.Scroller(params);
+      items = [];
 
     for (var i = 0; i < _items.length; i++) {
       title = content.getTitle(_items[i]);
@@ -2705,10 +2713,7 @@ RiseVision.RSS.HorizontalScroll = function (params, content) {
       }
     }
 
-    scrollerElem.addEventListener("ready", _onScrollerReady);
-    scrollerElem.addEventListener("done", _onScrollerDone);
-
-    _scroller.init(items);
+    return items;
   }
 
   function _onScrollerReady() {
@@ -2717,7 +2722,13 @@ RiseVision.RSS.HorizontalScroll = function (params, content) {
   }
 
   function _onScrollerDone() {
-    _waitingForUpdate = false;
+    if (_waitingForUpdate) {
+      _waitingForUpdate = false;
+
+      // Refresh scroller.
+      _scroller.refresh(_getItems());
+    }
+
     RiseVision.RSS.onContentDone();
   }
 
