@@ -257,7 +257,7 @@ RiseVision.RSS.Content = function (prefs, params) {
           _transition = new RiseVision.RSS.TransitionVerticalScroll(params, this);
         }
         else if (params.transition.direction === "left") {
-          _transition = new RiseVision.RSS.HorizontalScroll(prefs, params, this);
+          _transition = new RiseVision.RSS.HorizontalScroll(params, this);
         }
       }
       else if (params.transition.type === "page") {

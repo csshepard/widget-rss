@@ -1213,7 +1213,7 @@ RiseVision.Common.Utilities = (function() {
 var RiseVision = RiseVision || {};
 RiseVision.Common = RiseVision.Common || {};
 
-RiseVision.Common.Scroller = function (prefs, params) {
+RiseVision.Common.Scroller = function (params) {
 
   "use strict";
 
@@ -1466,8 +1466,8 @@ RiseVision.Common.Scroller = function (prefs, params) {
   function initCanvas(canvas) {
     var context = canvas.getContext("2d");
 
-    canvas.width = prefs.getInt("rsW");
-    canvas.height = prefs.getInt("rsH");
+    canvas.width = params.width;
+    canvas.height = params.height;
     context.xpos = 0;
 
     return context;
@@ -2629,7 +2629,7 @@ RiseVision.RSS.TransitionVerticalScroll = function (params, content) {
 var RiseVision = RiseVision || {};
 RiseVision.RSS = RiseVision.RSS || {};
 
-RiseVision.RSS.HorizontalScroll = function (prefs, params, content) {
+RiseVision.RSS.HorizontalScroll = function (params, content) {
   "use strict";
 
   var _items = [],
@@ -2651,7 +2651,7 @@ RiseVision.RSS.HorizontalScroll = function (prefs, params, content) {
       items = [],
       scrollerElem = document.querySelector("#scroller");
 
-    _scroller = new RiseVision.Common.Scroller(prefs, params);
+    _scroller = new RiseVision.Common.Scroller(params);
 
     for (var i = 0; i < _items.length; i++) {
       title = content.getTitle(_items[i]);
@@ -3016,7 +3016,7 @@ RiseVision.RSS.Content = function (prefs, params) {
           _transition = new RiseVision.RSS.TransitionVerticalScroll(params, this);
         }
         else if (params.transition.direction === "left") {
-          _transition = new RiseVision.RSS.HorizontalScroll(prefs, params, this);
+          _transition = new RiseVision.RSS.HorizontalScroll(params, this);
         }
       }
       else if (params.transition.type === "page") {

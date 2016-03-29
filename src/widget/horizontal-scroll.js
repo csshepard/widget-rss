@@ -1,7 +1,7 @@
 var RiseVision = RiseVision || {};
 RiseVision.RSS = RiseVision.RSS || {};
 
-RiseVision.RSS.HorizontalScroll = function (prefs, params, content) {
+RiseVision.RSS.HorizontalScroll = function (params, content) {
   "use strict";
 
   var _items = [],
@@ -23,7 +23,7 @@ RiseVision.RSS.HorizontalScroll = function (prefs, params, content) {
       items = [],
       scrollerElem = document.querySelector("#scroller");
 
-    _scroller = new RiseVision.Common.Scroller(prefs, params);
+    _scroller = new RiseVision.Common.Scroller(params);
 
     for (var i = 0; i < _items.length; i++) {
       title = content.getTitle(_items[i]);
