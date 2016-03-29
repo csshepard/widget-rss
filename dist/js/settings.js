@@ -12490,6 +12490,7 @@ module.run(["$templateCache", function($templateCache) {
 
           scope.defaultSetting = {
             type: "none",
+            direction: "up",
             duration: 10,
             pud: 10,
             resume: 5,
@@ -12540,13 +12541,22 @@ module.run(["$templateCache", function($templateCache) {
     "  </div>\n" +
     "</div>\n" +
     "<div class=\"row\">\n" +
-    "  <div class=\"col-md-3\" ng-if=\"transition.type === 'fade' || transition.type === 'page'\">\n" +
+    "  <div class=\"col-md-3\" ng-if=\"transition.type !== 'scroll'\">\n" +
     "    <div class=\"form-group\">\n" +
     "      <label class=\"control-label\">{{\"transition.duration\" | translate }}</label>\n" +
     "      <div class=\"input-group\">\n" +
     "        <input name=\"transition-duration\" type=\"number\"  class=\"form-control\" ng-model=\"transition.duration\">\n" +
     "        <span class=\"input-group-addon\">sec</span>\n" +
     "      </div>\n" +
+    "    </div>\n" +
+    "  </div>\n" +
+    "  <div class=\"col-md-3\" ng-if=\"transition.type === 'scroll'\">\n" +
+    "    <div class=\"form-group\">\n" +
+    "      <label class=\"control-label\">{{\"transition.direction.label\" | translate}}</label>\n" +
+    "      <select name=\"transition-direction\" ng-model=\"transition.direction\" class=\"form-control\">\n" +
+    "        <option value=\"up\">{{\"transition.direction.up\" | translate}}</option>\n" +
+    "        <option value=\"left\">{{\"transition.direction.left\" | translate}}</option>\n" +
+    "      </select>\n" +
     "    </div>\n" +
     "  </div>\n" +
     "  <div class=\"col-md-3\" ng-if=\"transition.type === 'scroll'\">\n" +
@@ -12559,7 +12569,7 @@ module.run(["$templateCache", function($templateCache) {
     "      </select>\n" +
     "    </div>\n" +
     "  </div>\n" +
-    "  <div class=\"col-md-3\" ng-if=\"transition.type === 'scroll' || transition.type === 'page'\">\n" +
+    "  <div class=\"col-md-3\" ng-if=\"transition.type === 'scroll' && transition.direction === 'up' || transition.type === 'page'\">\n" +
     "    <div class=\"form-group\">\n" +
     "      <label class=\"control-label\">{{\"transition.resume.label\" | translate}}</label>\n" +
     "      <span popover=\"{{'transition.resume.tooltip' | translate}}\" popover-trigger=\"click\"\n" +
@@ -12570,7 +12580,7 @@ module.run(["$templateCache", function($templateCache) {
     "      </div>\n" +
     "    </div>\n" +
     "  </div>\n" +
-    "  <div class=\"col-md-3\" ng-if=\"transition.type === 'scroll' || transition.type === 'page'\">\n" +
+    "  <div class=\"col-md-3\" ng-if=\"transition.type === 'scroll' && transition.direction === 'up' || transition.type === 'page'\">\n" +
     "    <div class=\"form-group\">\n" +
     "      <label class=\"control-label\">{{\"transition.pud.label\" | translate}}</label>\n" +
     "      <span popover=\"{{'transition.pud.tooltip' | translate}}\" popover-trigger=\"click\"\n" +

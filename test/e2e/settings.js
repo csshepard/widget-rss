@@ -216,6 +216,7 @@
             },
             "transition": {
               "type": "none",
+              "direction": "up",
               "duration": 10,
               "pud": 10,
               "resume": 5,
@@ -318,6 +319,7 @@
           },
           "transition": {
             "type": "none",
+            "direction": "up",
             "duration": 10,
             "pud": 10,
             "resume": 5,

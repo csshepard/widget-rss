@@ -107,6 +107,32 @@
         assert.equal(document.querySelector(".story").innerHTML, truncatedText);
       });
     });
+
+    suite("Transitioning", function() {
+
+      test("should transition to next set of rss items after 10 seconds", function () {
+
+        assert.equal(document.querySelector(".headline a").innerHTML, "RSS 2.0 - Entry 1 title", "first item displaying");
+
+        clock.tick(10000);
+
+        assert.equal(document.querySelector(".headline a").innerHTML, "RSS 2.0 - Entry 2 title", "second item displaying");
+      });
+
+    });
+
+    suite("No Separator", function() {
+
+      test("should set item height correctly", function() {
+        assert.equal(($("#container").height()/window.gadget.settings.additionalParams.itemsToShow) + "px" , document.querySelector(".item").style.height);
+      });
+
+      test("should not display separator between stories", function () {
+        assert.equal(document.querySelector(".item").style.borderBottom, "");
+      });
+
+    });
+
   });
 
 </script>
