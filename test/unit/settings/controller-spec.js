@@ -7,11 +7,12 @@ describe("Unit Tests - Settings Controller", function () {
 
   beforeEach(module("risevision.widget.rss.settings"));
 
-  beforeEach(inject(function($injector, $rootScope, $controller) {
+  beforeEach(inject(function($injector, $rootScope, $controller, _feedValidator_) {
     defaultSettings = $injector.get("defaultSettings");
     scope = $rootScope.$new();
     ctrl = $controller("rssSettingsController", {
-      $scope: scope
+      $scope: scope,
+      feedValidator: _feedValidator_
     });
 
     scope.settingsForm = {
@@ -30,6 +31,17 @@ describe("Unit Tests - Settings Controller", function () {
   it("should define defaultSettings", function (){
     expect(defaultSettings).to.be.truely;
     expect(defaultSettings).to.be.an("object");
+  });
+
+  it("Should set horizontalScrolling to true when 'scroll' and 'left' chosen from transition setting", function () {
+    expect(scope.horizontalScrolling).to.be.false;
+
+    scope.settings.additionalParams.transition.type = "scroll";
+    scope.settings.additionalParams.transition.direction = "left";
+
+    scope.$digest();
+
+    expect(scope.horizontalScrolling).to.be.true;
   });
 
 });

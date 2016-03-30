@@ -13906,7 +13906,13 @@ angular.module("risevision.widget.rss.settings")
   .controller("rssSettingsController", ["$scope", "$log", "feedValidator",
     function ($scope, $log, feedValidator) {
 
+      function isHorizontalConfigured() {
+        return $scope.settings.additionalParams.transition.direction === "left" &&
+          $scope.settings.additionalParams.transition.type === "scroll";
+      }
+
       $scope.feedValid = true;
+      $scope.horizontalScrolling = false;
 
       $scope.validateFeed = function() {
         feedValidator.isValid($scope.settings.additionalParams.url).then(function(value){
@@ -13934,6 +13940,18 @@ angular.module("risevision.widget.rss.settings")
           }
         }
 
+      });
+
+      $scope.$watch("settings.additionalParams.transition.type", function (value) {
+        if (typeof value !== "undefined") {
+          $scope.horizontalScrolling = isHorizontalConfigured();
+        }
+      });
+
+      $scope.$watch("settings.additionalParams.transition.direction", function (value) {
+        if (typeof value !== "undefined") {
+          $scope.horizontalScrolling = isHorizontalConfigured();
+        }
       });
 
       $scope.$watch("settings.additionalParams.dataSelection.showTitle", function (value) {
