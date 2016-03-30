@@ -23,6 +23,10 @@
   <section class="page"></section>
 </div>
 
+<canvas id="scroller">
+  Canvas is not supported.
+</canvas>
+
 <div id="messageContainer"></div>
 
 <!-- build:e2egadgets -->
@@ -69,9 +73,11 @@
 
 <!-- build:js js/widget.min.js -->
 <script src="components/jQuery.dotdotdot/src/jquery.dotdotdot.js"></script>
+<script src="components/webfontloader/webfontloader.js"></script>
 <script src="components/auto-scroll/jquery.auto-scroll.js"></script>
 <script src="components/widget-common/dist/config.js"></script>
 <script src="components/widget-common/dist/common.js"></script>
+<script src="components/widget-common/dist/scroller.js"></script>
 <script src="components/widget-common/dist/logger.js"></script>
 <script src="widget/rss.js"></script>
 <script src="widget/utils.js"></script>
@@ -79,6 +85,7 @@
 <script src="widget/rise-rss.js"></script>
 <script src="widget/transition-no-scroll.js"></script>
 <script src="widget/transition-vertical-scroll.js"></script>
+<script src="widget/horizontal-scroll.js"></script>
 <script src="widget/content.js"></script>
 <script src="components/widget-common/dist/message.js"></script>
 <script src="widget/main.js"></script>

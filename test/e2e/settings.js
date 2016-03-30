@@ -115,6 +115,30 @@
 
         expect(element(by.id("custom-layout")).isDisplayed()).to.eventually.be.true;
       });
+
+      it("should not show 'Items to Show' if horizontal scrolling selected", function () {
+        element(by.name("transition-by")).element(by.css("option[value='scroll']")).click();
+        element(by.name("transition-direction")).element(by.css("option[value='left']")).click();
+
+        expect(element(by.id("items-to-show")).isPresent()).to.eventually.be.false;
+
+      });
+
+      it("should not show 'Show Image' if horizontal scrolling selected", function () {
+        element(by.name("transition-by")).element(by.css("option[value='scroll']")).click();
+        element(by.name("transition-direction")).element(by.css("option[value='left']")).click();
+
+        expect(element(by.model("settings.additionalParams.dataSelection.showImage")).isPresent()).to.eventually.be.false;
+
+      });
+
+      it("should not show 'Layout' section if horizontal scrolling selected", function () {
+        element(by.name("transition-by")).element(by.css("option[value='scroll']")).click();
+        element(by.name("transition-direction")).element(by.css("option[value='left']")).click();
+
+        expect(element(by.id("layouts")).isPresent()).to.eventually.be.false;
+
+      });
     });
 
     describe("Warning message", function() {
@@ -216,6 +240,7 @@
             },
             "transition": {
               "type": "none",
+              "direction": "up",
               "duration": 10,
               "pud": 10,
               "resume": 5,
@@ -318,6 +343,7 @@
           },
           "transition": {
             "type": "none",
+            "direction": "up",
             "duration": 10,
             "pud": 10,
             "resume": 5,

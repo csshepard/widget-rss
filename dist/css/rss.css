@@ -75,6 +75,10 @@ body {
   height: 100%;
 }
 
+#scroller {
+  display: none;
+}
+
 #layout-4x1 .textWrapper {
   overflow: hidden;
 }

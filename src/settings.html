@@ -67,7 +67,7 @@
 
           <div class="row">
             <!-- Items to Show -->
-            <div class="col-md-3">
+            <div class="col-md-3" ng-if="!horizontalScrolling">
               <div class="form-group">
                 <label class="control-label">{{ "widget-rss.item.itemsToShow" | translate }}</label>
                 <input id="items-to-show" type="number" class="form-control" ng-model="settings.additionalParams.itemsToShow">
@@ -126,7 +126,7 @@
                 <!-- End Show Author -->
 
                 <!-- Show Image -->
-                <div class="col-md-3">
+                <div class="col-md-3" ng-if="!horizontalScrolling">
                   <label class="add-bottom">
                     <input type="checkbox" ng-model="settings.additionalParams.dataSelection.showImage">
                     {{ "widget-rss.data-selection.showImage" | translate }}
@@ -220,7 +220,7 @@
           <hr/>
 
           <!-- Layout -->
-          <div id="layouts">
+          <div id="layouts" ng-if="!horizontalScrolling">
             <label class="control-label">
               {{" widget-rss.layout.heading" | translate }}
             </label>
