@@ -2796,6 +2796,7 @@ RiseVision.RSS.Content = function (prefs, params) {
     _transition = null;
 
   var _imageTypes = ["image/bmp", "image/gif", "image/jpeg", "image/jpg", "image/png", "image/tiff"];
+  var _videoTypes = ["video/mp4", "video/webm", "video/ogg"];
 
   /*
    *  Private Methods
@@ -2815,8 +2816,8 @@ RiseVision.RSS.Content = function (prefs, params) {
   function _getImageUrl(item) {
     var imageUrl = null;
 
-    if (_.has(item, "enclosures")) {
-      if (item.enclosures[0] && (_.contains(_imageTypes, item.enclosures[0].type))) {
+    if (_.has(item, "enclosures") && item.enclosures[0]) {
+      if (_.contains(_imageTypes, item.enclosures[0].type)) {
         imageUrl = item.enclosures[0].url;
       }
     }
@@ -2825,6 +2826,18 @@ RiseVision.RSS.Content = function (prefs, params) {
     }
 
     return imageUrl;
+  }
+
+  function _getVideoObject(item) {
+    var videoObject = null;
+
+    if (_.has(item, "enclosures") && item.enclosures[0]) {
+      if (_.contains(_videoTypes, item.enclosures[0].type)) {
+        videoObject = item.enclosures[0];
+      }
+    }
+
+    return videoObject;
   }
 
   function _getImageUrls() {
@@ -2895,6 +2908,7 @@ RiseVision.RSS.Content = function (prefs, params) {
       story = getStory(item),
       author = getAuthor(item),
       imageUrl = _getImageUrl(item),
+      videoObject = _getVideoObject(item),
       date = getDate(item),
       template = document.querySelector("#layout").content,
       $content = $(template.cloneNode(true)),
@@ -2953,6 +2967,16 @@ RiseVision.RSS.Content = function (prefs, params) {
       if (image) {
         $content.find(".image").attr("src", imageUrl);
       }
+    }
+
+    // Video
+    if (!videoObject || ((typeof params.dataSelection.showImage !== "undefined") &&
+      !params.dataSelection.showImage)) {
+      $content.find(".video").remove();
+    }
+    else {
+      $content.find(".video").append($("<source>").attr({ src : videoObject.url, type : videoObject.type }));
+      $content.find(".video").play();
     }
 
     // Story
