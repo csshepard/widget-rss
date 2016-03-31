@@ -10,6 +10,7 @@
 
   <script src="../../src/components/webcomponentsjs/webcomponents-lite.min.js"></script>
   <script src="../../src/components/web-component-tester/browser.js"></script>
+  <script src="../../src/components/Canteen/build/canteen.min.js"></script>
 
   <link rel="import" href="../../src/components/rise-rss/rise-rss.html">
 </head>
@@ -55,7 +56,7 @@
 <script src="../../src/widget/main.js"></script>
 
 <script>
-  var paramsStub, server,
+  var paramsStub, server, context, json,
     scroller = document.querySelector("#scroller");
 
   paramsStub = sinon.stub(RiseVision.RSS, "setAdditionalParams", function (names, values) {
@@ -68,6 +69,13 @@
   });
 
   suite("Horizontal Scroll", function() {
+    suiteSetup(function() {
+      var secondary = document.querySelector("#secondary");
+
+      context = secondary.getContext("2d");
+      json = JSON.parse(context.json());
+    });
+
     suiteTeardown(function() {
       server.restore();
     });
@@ -81,9 +89,34 @@
     });
 
     test("should start scrolling", function () {
-      var context = scroller.getContext("2d");
+      var ctx = scroller.getContext("2d");
 
-      assert.isBelow(context.xpos, 0);
+      assert.isBelow(ctx.xpos, 0);
+    });
+
+    test("should scroll RSS feed data", function() {
+      assert.equal(json[5].arguments[0], "RSS 2.0 - Entry 1 title");
+    });
+
+    test("should refresh scroller after content has finished scrolling", function (done) {
+      context.clear();
+
+      var responseHandler = function() {
+        json = JSON.parse(context.json());
+
+        assert.equal(json[5].arguments[0], "Refreshed content", "text");
+        assert.equal(json[11].method, "arc", "separator");
+
+        scroller.removeEventListener("done", responseHandler);
+        done();
+      }
+
+      RiseVision.RSS.onRiseRSSRefresh({
+        "items": [{ "title": "Refreshed content" }]
+      });
+
+      this.timeout(30000);
+      scroller.addEventListener("done", responseHandler);
     });
   });
 </script>

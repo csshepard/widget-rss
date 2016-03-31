@@ -31,7 +31,8 @@ RiseVision.RSS.HorizontalScroll = function (params, content) {
       date = "",
       story = "",
       item = null,
-      items = [];
+      items = [],
+      showSeparator = params.separator && params.separator.show;
 
     for (var i = 0; i < _items.length; i++) {
       title = content.getTitle(_items[i]);
@@ -68,6 +69,14 @@ RiseVision.RSS.HorizontalScroll = function (params, content) {
         item = {};
         item.text = story;
         item.fontStyle = params.story.fontStyle;
+        items.push(item);
+      }
+
+      if (showSeparator) {
+        item = {};
+        item.separator = true;
+        item.size = params.separator.size;
+        item.color = params.separator.color;
         items.push(item);
       }
     }
