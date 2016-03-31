@@ -87,6 +87,11 @@
         "showImage" : true,
         "showDescription": "snippet",
         "snippetLength": 120
+      },
+      "separator": {
+        "show": true,
+        "size": 1,
+        "color": "rgb(0,0,0)"
       }
     }
   };
