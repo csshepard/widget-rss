@@ -218,8 +218,15 @@
     });
   });
 
+  gulp.task("bower-update", function (cb) {
+    return bower({ cmd: "update"}).on("error", function(err) {
+      console.log(err);
+      cb();
+    });
+  });
+
   gulp.task("build", function (cb) {
-    runSequence(["clean", "config"], ["source", "fonts", "images", "layouts", "i18n", "vendor", "rise-rss"], ["unminify"], cb);
+    runSequence(["clean", "config", "bower-update"], ["source", "fonts", "images", "layouts", "i18n", "vendor", "rise-rss"], ["unminify"], cb);
   });
 
   gulp.task("bump", function(){
