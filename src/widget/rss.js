@@ -77,28 +77,28 @@ RiseVision.RSS = (function (document, gadgets) {
     var fontSettings = [
       {
         "class": "story_font-style",
-        "fontSetting": _additionalParams.story.fontStyle
+        "fontStyle": _additionalParams.story.fontStyle
       }
     ];
 
     if(_additionalParams.headline && !_.isEmpty(_additionalParams.headline.fontStyle)){
       fontSettings.push({
         "class": "headline_font-style",
-        "fontSetting": _additionalParams.headline.fontStyle
+        "fontStyle": _additionalParams.headline.fontStyle
       });
     }
 
     if(_additionalParams.timestamp && !_.isEmpty(_additionalParams.timestamp.fontStyle)){
       fontSettings.push({
         "class": "timestamp_font-style",
-        "fontSetting": _additionalParams.timestamp.fontStyle
+        "fontStyle": _additionalParams.timestamp.fontStyle
       });
     }
 
     if(_additionalParams.author && !_.isEmpty(_additionalParams.author.fontStyle)){
       fontSettings.push({
         "class": "author_font-style",
-        "fontSetting": _additionalParams.author.fontStyle
+        "fontStyle": _additionalParams.author.fontStyle
       });
     }
 

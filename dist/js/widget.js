@@ -1028,6 +1028,7 @@ g,0<c.length&&(c=Aa[c[0]])&&(a.c[e]=c))}a.c[e]||(c=Aa[e])&&(a.c[e]=c);for(c=0;c<
 	};
 })(jQuery, window, document);
 
+/* exported WIDGET_COMMON_CONFIG */
 var WIDGET_COMMON_CONFIG = {
   AUTH_PATH_URL: "v1/widget/auth",
   LOGGER_CLIENT_ID: "1088527147109-6q1o2vtihn34292pjt4ckhmhck0rk0o7.apps.googleusercontent.com",
@@ -1036,6 +1037,8 @@ var WIDGET_COMMON_CONFIG = {
   STORAGE_ENV: "prod",
   STORE_URL: "https://store-dot-rvaserver2.appspot.com/"
 };
+/* global WebFont */
+
 var RiseVision = RiseVision || {};
 
 RiseVision.Common = RiseVision.Common || {};
@@ -1043,13 +1046,13 @@ RiseVision.Common = RiseVision.Common || {};
 RiseVision.Common.Utilities = (function() {
 
   function getFontCssStyle(className, fontObj) {
-    var family = "font-family:" + fontObj.font.family + "; ";
+    var family = "font-family: " + decodeURIComponent(fontObj.font.family).replace(/'/g, "") + "; ";
     var color = "color: " + (fontObj.color ? fontObj.color : fontObj.forecolor) + "; ";
     var size = "font-size: " + (fontObj.size.indexOf("px") === -1 ? fontObj.size + "px; " : fontObj.size + "; ");
     var weight = "font-weight: " + (fontObj.bold ? "bold" : "normal") + "; ";
     var italic = "font-style: " + (fontObj.italic ? "italic" : "normal") + "; ";
     var underline = "text-decoration: " + (fontObj.underline ? "underline" : "none") + "; ";
-    var highlight = "background-color: " + (fontObj.highlightColor ? fontObj.highlightColor : fontObj.backcolor) + "; ";
+    var highlight = "background-color: " + (fontObj.highlightColor ? fontObj.highlightColor : fontObj.backcolor) + ";";
 
     return "." + className + " {" + family + color + size + weight + italic + underline + highlight + "}";
   }
@@ -1091,23 +1094,75 @@ RiseVision.Common.Utilities = (function() {
    *           object   contentDoc    Document object into which to inject styles
    *                                  and load fonts (optional).
    */
-  function loadFonts(settings, contentDoc) {
-    settings.forEach(function(item) {
-      if (item.class && item.fontSetting) {
-        addCSSRules([ getFontCssStyle(item.class, item.fontSetting) ]);
-      }
+  function loadFonts(settings, cb) {
+    var families = null,
+      googleFamilies = [],
+      customFamilies = [],
+      customUrls = [];
 
-      if (item.fontSetting.font.type) {
-        if (item.fontSetting.font.type === "custom" && item.fontSetting.font.family &&
-          item.fontSetting.font.url) {
-          loadCustomFont(item.fontSetting.font.family, item.fontSetting.font.url,
-            contentDoc);
-        }
-        else if (item.fontSetting.font.type === "google" && item.fontSetting.font.family) {
-          loadGoogleFont(item.fontSetting.font.family, contentDoc);
-        }
+    function callback() {
+      if (cb && typeof cb === "function") {
+        cb();
+      }
+    }
+
+    function onGoogleFontsLoaded() {
+      callback();
+    }
+
+    if (!settings || settings.length === 0) {
+      callback();
+      return;
+    }
+
+    // Check for custom css class names and add rules if so
+    settings.forEach(function(item) {
+      if (item.class && item.fontStyle) {
+        addCSSRules([ getFontCssStyle(item.class, item.fontStyle) ]);
       }
     });
+
+    // Google fonts
+    for (var i = 0; i < settings.length; i++) {
+      if (settings[i].fontStyle && settings[i].fontStyle.font.type &&
+        (settings[i].fontStyle.font.type === "google")) {
+        // Remove fallback font.
+        families = settings[i].fontStyle.font.family.split(",")[0];
+
+        // strip possible single quotes
+        families = families.replace(/'/g, "");
+
+        googleFamilies.push(families);
+      }
+    }
+
+    // Custom fonts
+    for (i = 0; i < settings.length; i++) {
+      if (settings[i].fontStyle && settings[i].fontStyle.font.type &&
+        (settings[i].fontStyle.font.type === "custom")) {
+        // decode value and strip single quotes
+        customFamilies.push(decodeURIComponent(settings[i].fontStyle.font.family).replace(/'/g, ""));
+        // strip single quotes
+        customUrls.push(settings[i].fontStyle.font.url.replace(/'/g, "\\'"));
+      }
+    }
+
+    if (googleFamilies.length === 0 && customFamilies.length === 0) {
+      callback();
+    }
+    else {
+      // Load the fonts
+      for (var j = 0; j < customFamilies.length; j += 1) {
+        loadCustomFont(customFamilies[j], customUrls[j]);
+      }
+
+      if (googleFamilies.length > 0) {
+        loadGoogleFonts(googleFamilies, onGoogleFontsLoaded);
+      }
+      else {
+        callback();
+      }
+    }
   }
 
   function loadCustomFont(family, url, contentDoc) {
@@ -1123,26 +1178,23 @@ RiseVision.Common.Utilities = (function() {
     }
   }
 
-  function loadGoogleFont(family, contentDoc) {
-    var stylesheet = document.createElement("link"),
-      familyVal;
-
-    contentDoc = contentDoc || document;
-
-    stylesheet.setAttribute("rel", "stylesheet");
-    stylesheet.setAttribute("type", "text/css");
-
-    // split to account for family value containing a fallback (eg. Aladin,sans-serif)
-    familyVal = family.split(",")[0];
-
-    // strip possible single quotes
-    familyVal = familyVal.replace(/'/g, "");
-
-    stylesheet.setAttribute("href", "https://fonts.googleapis.com/css?family=" + familyVal);
-
-    if (stylesheet !== null) {
-      contentDoc.getElementsByTagName("head")[0].appendChild(stylesheet);
-    }
+  function loadGoogleFonts(families, cb) {
+    WebFont.load({
+      google: {
+        families: families
+      },
+      active: function() {
+        if (cb && typeof cb === "function") {
+          cb();
+        }
+      },
+      inactive: function() {
+        if (cb && typeof cb === "function") {
+          cb();
+        }
+      },
+      timeout: 2000
+    });
   }
 
   function preloadImages(urls) {
@@ -1163,7 +1215,7 @@ RiseVision.Common.Utilities = (function() {
     for (var i = 0; i < vars.length; i++) {
       pair = vars[i].split("=");
 
-      if (pair[0] == param) {
+      if (pair[0] == param) { // jshint ignore:line
         return decodeURIComponent(pair[1]);
       }
     }
@@ -1201,14 +1253,14 @@ RiseVision.Common.Utilities = (function() {
     addCSSRules:      addCSSRules,
     loadFonts:        loadFonts,
     loadCustomFont:   loadCustomFont,
-    loadGoogleFont:   loadGoogleFont,
+    loadGoogleFonts:   loadGoogleFonts,
     preloadImages:    preloadImages,
     getRiseCacheErrorMessage: getRiseCacheErrorMessage,
     unescapeHTML: unescapeHTML
   };
 })();
 
-/* global WebFont, TweenLite, Linear */
+/* global TweenLite, Linear */
 
 var RiseVision = RiseVision || {};
 RiseVision.Common = RiseVision.Common || {};
@@ -1230,84 +1282,6 @@ RiseVision.Common.Scroller = function (params) {
   /*
    *  Private Methods
    */
-
-  /* Load custom and Google fonts. */
-  function loadFonts() {
-    var families = null,
-      googleFamilies = [],
-      customFamilies = [],
-      customUrls = [];
-
-    // Google fonts
-    for (var i = 0; i < _items.length; i++) {
-      if (_items[i].fontStyle && _items[i].fontStyle.font.type &&
-        (_items[i].fontStyle.font.type === "google")) {
-        // Remove fallback font.
-        families = _items[i].fontStyle.font.family.split(",");
-
-        googleFamilies.push(families[0]);
-      }
-    }
-
-    // Custom Fonts
-    for (i = 0; i < _items.length; i++) {
-      if (_items[i].fontStyle && _items[i].fontStyle.font.type &&
-        (_items[i].fontStyle.font.type === "custom")) {
-        customFamilies.push(_items[i].fontStyle.font.family);
-        customUrls.push(_items[i].fontStyle.font.url);
-      }
-    }
-
-    if (customFamilies.length > 0) {
-      loadCustomFonts(customFamilies, customUrls, function() {
-        if (googleFamilies.length > 0) {
-          loadGoogleFonts(googleFamilies, onFontsLoaded);
-        }
-        else {
-          onFontsLoaded();
-        }
-      });
-    }
-    else if (googleFamilies.length > 0) {
-      loadGoogleFonts(googleFamilies, onFontsLoaded);
-    }
-    else {
-      onFontsLoaded();
-    }
-  }
-
-  /* Load custom fonts. */
-  function loadCustomFonts(families, urls, cb) {
-    WebFont.load({
-      custom: {
-        families: families,
-        urls: urls
-      },
-      active: function() {
-        cb();
-      },
-      inactive: function() {
-        cb();
-      },
-      timeout: 2000
-    });
-  }
-
-  /* Load Google fonts. */
-  function loadGoogleFonts(families, cb) {
-    WebFont.load({
-      google: {
-        families: families
-      },
-      active: function() {
-        cb();
-      },
-      inactive: function() {
-        cb();
-      },
-      timeout: 2000
-    });
-  }
 
   /* Handler for when custom and Google fonts have been loaded. */
   function onFontsLoaded() {
@@ -1520,7 +1494,8 @@ RiseVision.Common.Scroller = function (params) {
     createSecondaryCanvas();
 
     // Fonts need to be loaded before drawing to the canvas.
-    loadFonts();
+    _utils.loadFonts(items, onFontsLoaded);
+
   }
 
   function refresh(items) {
@@ -1551,7 +1526,7 @@ RiseVision.Common.Scroller = function (params) {
   };
 };
 
-/* global gadgets */
+/* global WIDGET_COMMON_CONFIG */
 
 var RiseVision = RiseVision || {};
 RiseVision.Common = RiseVision.Common || {};
@@ -1836,28 +1811,28 @@ RiseVision.RSS = (function (document, gadgets) {
     var fontSettings = [
       {
         "class": "story_font-style",
-        "fontSetting": _additionalParams.story.fontStyle
+        "fontStyle": _additionalParams.story.fontStyle
       }
     ];
 
     if(_additionalParams.headline && !_.isEmpty(_additionalParams.headline.fontStyle)){
       fontSettings.push({
         "class": "headline_font-style",
-        "fontSetting": _additionalParams.headline.fontStyle
+        "fontStyle": _additionalParams.headline.fontStyle
       });
     }
 
     if(_additionalParams.timestamp && !_.isEmpty(_additionalParams.timestamp.fontStyle)){
       fontSettings.push({
         "class": "timestamp_font-style",
-        "fontSetting": _additionalParams.timestamp.fontStyle
+        "fontStyle": _additionalParams.timestamp.fontStyle
       });
     }
 
     if(_additionalParams.author && !_.isEmpty(_additionalParams.author.fontStyle)){
       fontSettings.push({
         "class": "author_font-style",
-        "fontSetting": _additionalParams.author.fontStyle
+        "fontStyle": _additionalParams.author.fontStyle
       });
     }
 
