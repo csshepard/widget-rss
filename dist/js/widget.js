@@ -1283,14 +1283,6 @@ RiseVision.Common.Scroller = function (params) {
    *  Private Methods
    */
 
-  /* Handler for when custom and Google fonts have been loaded. */
-  function onFontsLoaded() {
-    initSecondaryCanvas();
-
-    TweenLite.ticker.addEventListener("tick", draw);
-    _scroller.dispatchEvent(new CustomEvent("ready", { "bubbles": true }));
-  }
-
   /* Initialize the secondary canvas from which text will be copied to the scroller. */
   function initSecondaryCanvas() {
     drawItems();
@@ -1492,10 +1484,10 @@ RiseVision.Common.Scroller = function (params) {
     _scrollerCtx = initCanvas(_scroller);
 
     createSecondaryCanvas();
+    initSecondaryCanvas();
 
-    // Fonts need to be loaded before drawing to the canvas.
-    _utils.loadFonts(items, onFontsLoaded);
-
+    TweenLite.ticker.addEventListener("tick", draw);
+    _scroller.dispatchEvent(new CustomEvent("ready", { "bubbles": true }));
   }
 
   function refresh(items) {
@@ -1807,7 +1799,7 @@ RiseVision.RSS = (function (document, gadgets) {
   }
 
   /* Load Google and custom fonts. */
-  function _loadFonts() {
+  function _loadFonts(cb) {
     var fontSettings = [
       {
         "class": "story_font-style",
@@ -1815,28 +1807,33 @@ RiseVision.RSS = (function (document, gadgets) {
       }
     ];
 
-    if(_additionalParams.headline && !_.isEmpty(_additionalParams.headline.fontStyle)){
+    if (_additionalParams.headline && !_.isEmpty(_additionalParams.headline.fontStyle)) {
       fontSettings.push({
         "class": "headline_font-style",
         "fontStyle": _additionalParams.headline.fontStyle
       });
     }
 
-    if(_additionalParams.timestamp && !_.isEmpty(_additionalParams.timestamp.fontStyle)){
+    if (_additionalParams.timestamp && !_.isEmpty(_additionalParams.timestamp.fontStyle)) {
       fontSettings.push({
         "class": "timestamp_font-style",
         "fontStyle": _additionalParams.timestamp.fontStyle
       });
     }
 
-    if(_additionalParams.author && !_.isEmpty(_additionalParams.author.fontStyle)){
+    if (_additionalParams.author && !_.isEmpty(_additionalParams.author.fontStyle)) {
       fontSettings.push({
         "class": "author_font-style",
         "fontStyle": _additionalParams.author.fontStyle
       });
     }
 
-    RiseVision.Common.Utilities.loadFonts(fontSettings);
+    if (cb && (typeof cb === "function")) {
+      RiseVision.Common.Utilities.loadFonts(fontSettings, cb);
+    }
+    else {
+      RiseVision.Common.Utilities.loadFonts(fontSettings);
+    }
   }
 
   function _initRiseRSS() {
@@ -1914,8 +1911,11 @@ RiseVision.RSS = (function (document, gadgets) {
     document.getElementById("scroller").style.display = "block";
 
     _showLoadingMessage();
-    _initRiseRSS();
-    _ready();
+
+    _loadFonts(function() {
+      _initRiseRSS();
+      _ready();
+    });
   }
 
   /*
