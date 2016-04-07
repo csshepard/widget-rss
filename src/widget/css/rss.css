@@ -59,6 +59,7 @@ body {
 }
 
 .fade-in, .fade-out {
+  -webkit-transition: opacity 1s;
   transition: opacity 1s;
 }
 

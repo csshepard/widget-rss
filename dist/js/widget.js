@@ -2353,7 +2353,7 @@ RiseVision.RSS.TransitionNoScroll = function (params, content) {
 
   function _clear(cb) {
     if (params.transition.type === "fade") {
-      $(".item").one("transitionend", function() {
+      $(".item").one("webkitTransitionEnd transitionend", function() {
         _clearPage(cb);
       });
 
