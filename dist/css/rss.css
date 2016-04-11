@@ -58,6 +58,10 @@ body {
   overflow: hidden;
 }
 
+.custom-font {
+  visibility: hidden;
+}
+
 .fade-in, .fade-out {
   -webkit-transition: opacity 1s;
   transition: opacity 1s;

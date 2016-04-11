@@ -73,7 +73,7 @@ RiseVision.RSS = (function (document, gadgets) {
   }
 
   /* Load Google and custom fonts. */
-  function _loadFonts() {
+  function _loadFonts(cb) {
     var fontSettings = [
       {
         "class": "story_font-style",
@@ -81,28 +81,33 @@ RiseVision.RSS = (function (document, gadgets) {
       }
     ];
 
-    if(_additionalParams.headline && !_.isEmpty(_additionalParams.headline.fontStyle)){
+    if (_additionalParams.headline && !_.isEmpty(_additionalParams.headline.fontStyle)) {
       fontSettings.push({
         "class": "headline_font-style",
         "fontStyle": _additionalParams.headline.fontStyle
       });
     }
 
-    if(_additionalParams.timestamp && !_.isEmpty(_additionalParams.timestamp.fontStyle)){
+    if (_additionalParams.timestamp && !_.isEmpty(_additionalParams.timestamp.fontStyle)) {
       fontSettings.push({
         "class": "timestamp_font-style",
         "fontStyle": _additionalParams.timestamp.fontStyle
       });
     }
 
-    if(_additionalParams.author && !_.isEmpty(_additionalParams.author.fontStyle)){
+    if (_additionalParams.author && !_.isEmpty(_additionalParams.author.fontStyle)) {
       fontSettings.push({
         "class": "author_font-style",
         "fontStyle": _additionalParams.author.fontStyle
       });
     }
 
-    RiseVision.Common.Utilities.loadFonts(fontSettings);
+    if (cb && (typeof cb === "function")) {
+      RiseVision.Common.Utilities.loadFonts(fontSettings, cb);
+    }
+    else {
+      RiseVision.Common.Utilities.loadFonts(fontSettings);
+    }
   }
 
   function _initRiseRSS() {
@@ -180,8 +185,11 @@ RiseVision.RSS = (function (document, gadgets) {
     document.getElementById("scroller").style.display = "block";
 
     _showLoadingMessage();
-    _initRiseRSS();
-    _ready();
+
+    _loadFonts(function() {
+      _initRiseRSS();
+      _ready();
+    });
   }
 
   /*
