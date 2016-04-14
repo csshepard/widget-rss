@@ -322,6 +322,10 @@ RiseVision.RSS = (function (document, gadgets) {
   function showError(message) {
     _errorFlag = true;
 
+    if (!_content) {
+      _content = new RiseVision.RSS.Content(_prefs, _additionalParams);
+    }
+
     _content.reset();
     _currentFeed = null;
     _message.show(message);

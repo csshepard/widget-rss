@@ -105,7 +105,11 @@
       });
 
       it("Should not show warning message regarding RSS feed", function () {
-        expect(element(by.css(".text-danger")).isPresent()).to.eventually.be.false;
+        expect(element(by.id("invalid-feed")).isPresent()).to.eventually.be.false;
+      });
+
+      it("Should not show authentication warning message", function () {
+        expect(element(by.id("authentication")).isPresent()).to.eventually.be.false;
       });
     });
 
@@ -141,11 +145,17 @@
       });
     });
 
-    describe("Warning message", function() {
-      it("should not show warning when URL Field is receiving input", function() {
+    describe("Warning messages", function() {
+      it("should not show invalid feed warning when URL Field is receiving input", function() {
         element(by.css("#rssUrl input[name='url']")).sendKeys("http://test.com/rss");
 
-        expect(element(by.css(".text-danger")).isPresent()).to.eventually.be.false;
+        expect(element(by.id("invalid-feed")).isPresent()).to.eventually.be.false;
+      });
+
+      it("should not show authentication warning when URL Field is receiving input", function() {
+        element(by.css("#rssUrl input[name='url']")).sendKeys("http://test.com/rss");
+
+        expect(element(by.id("authentication")).isPresent()).to.eventually.be.false;
       });
     });
 

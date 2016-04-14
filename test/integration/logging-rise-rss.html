@@ -93,7 +93,7 @@
       RiseVision.Common.LoggerUtils.logEvent.restore();
     });
 
-    suite("rise rss error", function() {
+    suite("rise-rss-error", function() {
       var spyCall;
 
       test("should log a rise rss error with non-makeRequest detail", function(done) {
@@ -172,6 +172,23 @@
 
         assert.equal(spy.callCount, 1, "called once");
         assert(spy.calledWith(table, params));
+      });
+
+      test("should log a feed authentication error if the feed requires authentication", function(done) {
+        spy = sinon.spy(RiseVision.Common.LoggerUtils, "logEvent");
+
+        rss.dispatchEvent(new CustomEvent("rise-rss-error", {
+          "detail": "401 Unauthorized",
+          "bubbles": true
+        }));
+
+        params.event = "error";
+        params.event_details = "feed authentication error";
+        params.error_details = "401 Unauthorized";
+
+        assert(spy.calledOnce);
+        assert(spy.calledWith(table, params));
+        done();
       });
     });
 
