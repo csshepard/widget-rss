@@ -2048,6 +2048,10 @@ RiseVision.RSS = (function (document, gadgets) {
   function showError(message) {
     _errorFlag = true;
 
+    if (!_content) {
+      _content = new RiseVision.RSS.Content(_prefs, _additionalParams);
+    }
+
     _content.reset();
     _currentFeed = null;
     _message.show(message);
@@ -2227,7 +2231,11 @@ RiseVision.RSS.RiseRSS = function (data) {
     });
 
     rss.addEventListener("rise-rss-error", function (e) {
-      var errorDetails = "";
+      var errorDetails = "",
+        params = {
+          "event": "error",
+          "feed_url": data.url
+        };
 
       if (e.detail && typeof e.detail === "string") {
         errorDetails = e.detail;
@@ -2237,15 +2245,19 @@ RiseVision.RSS.RiseRSS = function (data) {
         errorDetails = e.detail[0];
       }
 
-      var params = {
-        "event": "error",
-        "event_details": "rise rss error",
-        "error_details": errorDetails,
-        "feed_url": data.url
-      };
+      params.error_details = errorDetails;
+
+      if (errorDetails === "401 Unauthorized") {
+        params.event_details = "feed authentication error";
+        RiseVision.RSS.showError("The feed at the URL provided cannot be shown because it is " +
+          "protected and requires authentication.");
+      }
+      else {
+        params.event_details = "rise rss error";
+        RiseVision.RSS.showError("Sorry, there was a problem with the RSS feed.");
+      }
 
       RiseVision.RSS.logEvent(params, true);
-      RiseVision.RSS.showError("Sorry, there was a problem with the RSS feed.", true);
     });
 
     rss.setAttribute("url", data.url);

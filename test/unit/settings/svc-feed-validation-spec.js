@@ -28,6 +28,15 @@ describe("Feed Validator", function () {
 
     $httpBackend.when("GET", "https://proxy.risevision.com/https://validator.w3.org/feed/check.cgi?url=http://test.com/invalid&output=soap12")
       .respond(invalidFeedResponse);
+
+    $httpBackend.when("GET", "https://feed-parser.risevision.com/http://test.com/unauthorized")
+      .respond({ "Error": "401 Unauthorized" });
+
+    $httpBackend.when("GET", "https://feed-parser.risevision.com/http://test.com/authorized")
+      .respond("Feed data");
+
+    $httpBackend.when("GET", "https://feed-parser.risevision.com/http://test.com/error")
+      .respond(401, "");
   }));
 
 
@@ -66,6 +75,40 @@ describe("Feed Validator", function () {
 
     });
 
+  });
+
+  describe("requiresAuthentication", function() {
+    it("should exist", function() {
+      expect(feedValidator.requiresAuthentication).be.defined;
+      expect(feedValidator.requiresAuthentication).to.be.a("function");
+    });
+
+    it("should return a value of true when feed requires authentication", function (done) {
+      feedValidator.requiresAuthentication("http://test.com/unauthorized").then(function (value) {
+        expect(value).to.be.true;
+        done();
+      });
+
+      $httpBackend.flush();
+    });
+
+    it("should return a value of false when feed does not require authentication", function (done) {
+      feedValidator.requiresAuthentication("http://test.com/authorized").then(function (value) {
+        expect(value).to.be.false;
+        done();
+      });
+
+      $httpBackend.flush();
+    });
+
+    it("should return a value of false if authentication check fails", function (done) {
+      feedValidator.requiresAuthentication("http://test.com/error").then(function (value) {
+        expect(value).to.be.false;
+        done();
+      });
+
+      $httpBackend.flush();
+    });
   });
 
 });

@@ -8,6 +8,7 @@ angular.module("risevision.widget.rss.settings")
       }
 
       $scope.feedValid = true;
+      $scope.requiresAuthentication = false;
       $scope.horizontalScrolling = false;
 
       $scope.validateFeed = function() {
@@ -16,23 +17,33 @@ angular.module("risevision.widget.rss.settings")
         });
       };
 
-      $scope.$on("urlFieldBlur", function () {
+      $scope.checkAuthentication = function() {
         if ($scope.settingsForm.rssUrl.$valid) {
-          $scope.validateFeed();
+          feedValidator.requiresAuthentication($scope.settings.additionalParams.url)
+            .then(function(value) {
+              $scope.requiresAuthentication = value;
+
+              if (!value) {
+                $scope.validateFeed();
+              }
+          });
         }
+      };
+
+      $scope.$on("urlFieldBlur", function () {
+        $scope.checkAuthentication();
       });
 
       $scope.$watch("settings.additionalParams.url", function (newVal, oldVal) {
         if (typeof oldVal === "undefined" && newVal && newVal !== "") {
-          // previously saved settings are being shown, ensure to check if feed is w3c valid
-          if ($scope.settingsForm.rssUrl.$valid) {
-            $scope.validateFeed();
-          }
+          // previously saved settings are being shown
+          $scope.checkAuthentication();
         }
         else {
           if (typeof newVal !== "undefined") {
             // ensure warning message doesn't get shown while url field is receiving input
             $scope.feedValid = true;
+            $scope.requiresAuthentication = false;
           }
         }
 

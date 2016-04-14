@@ -114,7 +114,7 @@
       });
     });
 
-    suite("rise-rss error", function() {
+    suite("rise-rss-error", function() {
       test("should show rise-rss error message", function() {
 
         rss.dispatchEvent(new CustomEvent("rise-rss-error", {
@@ -123,6 +123,16 @@
         }));
 
         assert.equal(document.querySelector(".message").innerHTML, "Sorry, there was a problem with the RSS feed.", "message is correct");
+      });
+
+      test("should show message that feed requires authentication", function() {
+        rss.dispatchEvent(new CustomEvent("rise-rss-error", {
+          "detail": "401 Unauthorized",
+          "bubbles": true
+        }));
+
+        assert.equal(document.querySelector(".message").innerHTML,
+          "The feed at the URL provided cannot be shown because it is protected and requires authentication.");
       });
     });
 
