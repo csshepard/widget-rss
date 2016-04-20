@@ -2254,8 +2254,7 @@ RiseVision.RSS.RiseRSS = function (data) {
           "protected and requires authentication.");
       }
       else if (errorDetails.toLowerCase() === "not a feed") {
-        RiseVision.RSS.showError("The feed at the URL provided cannot be shown because it is " +
-          "not an RSS feed.");
+        RiseVision.RSS.showError("The URL provided is not an RSS feed.");
       }
       else {
         RiseVision.RSS.showError("Sorry, there was a problem with the RSS feed.");
