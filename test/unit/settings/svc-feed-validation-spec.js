@@ -35,6 +35,9 @@ describe("Feed Validator", function () {
     $httpBackend.when("GET", "https://feed-parser.risevision.com/http://test.com/authorized")
       .respond("Feed data");
 
+    $httpBackend.when("GET", "https://feed-parser.risevision.com/http://test.com/not-a-feed")
+      .respond({ "Error": "Not a feed" });
+
     $httpBackend.when("GET", "https://feed-parser.risevision.com/http://test.com/error")
       .respond(401, "");
   }));
@@ -79,31 +82,43 @@ describe("Feed Validator", function () {
 
   describe("requiresAuthentication", function() {
     it("should exist", function() {
-      expect(feedValidator.requiresAuthentication).be.defined;
-      expect(feedValidator.requiresAuthentication).to.be.a("function");
+      expect(feedValidator.isParsable).be.defined;
+      expect(feedValidator.isParsable).to.be.a("function");
     });
 
-    it("should return a value of true when feed requires authentication", function (done) {
-      feedValidator.requiresAuthentication("http://test.com/unauthorized").then(function (value) {
-        expect(value).to.be.true;
+    it("should return a value of unauthorized when feed requires authentication", function (done) {
+      feedValidator.isParsable("http://test.com/unauthorized").then(function (value) {
+        expect(value).to.equal('401 Unauthorized');
         done();
       });
 
       $httpBackend.flush();
     });
 
-    it("should return a value of false when feed does not require authentication", function (done) {
-      feedValidator.requiresAuthentication("http://test.com/authorized").then(function (value) {
-        expect(value).to.be.false;
+    it("should return a value of null when feed does not require authentication", function (done) {
+      feedValidator.isParsable("http://test.com/authorized").then(function (value) {
+        expect(value).to.be.null;
         done();
       });
 
       $httpBackend.flush();
     });
 
-    it("should return a value of false if authentication check fails", function (done) {
-      feedValidator.requiresAuthentication("http://test.com/error").then(function (value) {
-        expect(value).to.be.false;
+    it("should return a value of null if authentication check fails", function (done) {
+      feedValidator.isParsable("http://test.com/error").then(function (value) {
+        expect(value).to.be.null;
+        done();
+      });
+
+      $httpBackend.flush();
+    });
+  });
+
+  describe("notAFeed", function() {
+
+    it("should return a value of not a feed when feed parser does not recognized a feed from the url", function (done) {
+      feedValidator.isParsable("http://test.com/not-a-feed").then(function (value) {
+        expect(value).to.equal('Not a feed');
         done();
       });
 

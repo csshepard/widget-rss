@@ -13913,6 +13913,7 @@ angular.module("risevision.widget.rss.settings")
 
       $scope.feedValid = true;
       $scope.requiresAuthentication = false;
+      $scope.notAFeed = false;
       $scope.horizontalScrolling = false;
 
       $scope.validateFeed = function() {
@@ -13921,27 +13922,36 @@ angular.module("risevision.widget.rss.settings")
         });
       };
 
-      $scope.checkAuthentication = function() {
-        if ($scope.settingsForm.rssUrl.$valid) {
-          feedValidator.requiresAuthentication($scope.settings.additionalParams.url)
+      $scope.checkWithFeedParser = function() {
+        if ($scope.settings.additionalParams.url && $scope.settingsForm.rssUrl.$valid) {
+          feedValidator.isParsable($scope.settings.additionalParams.url)
             .then(function(value) {
-              $scope.requiresAuthentication = value;
-
+              if (value === "401 Unauthorized") {
+                $scope.requiresAuthentication = true;
+              } else if (value === "Not a feed") {
+                $scope.notAFeed = true;
+              }
               if (!value) {
+                $scope.requiresAuthentication = false;
+                $scope.notAFeed = false;
                 $scope.validateFeed();
               }
           });
+        } else {
+          $scope.requiresAuthentication = false;
+          $scope.notAFeed = false;
+          $scope.feedValid = true;
         }
       };
 
       $scope.$on("urlFieldBlur", function () {
-        $scope.checkAuthentication();
+        $scope.checkWithFeedParser();
       });
 
       $scope.$watch("settings.additionalParams.url", function (newVal, oldVal) {
         if (typeof oldVal === "undefined" && newVal && newVal !== "") {
           // previously saved settings are being shown
-          $scope.checkAuthentication();
+          $scope.checkWithFeedParser();
         }
         else {
           if (typeof newVal !== "undefined") {
@@ -14109,23 +14119,21 @@ angular.module("risevision.widget.rss.settings")
           $log.debug("Validation request failed with status code " + response.status + ": " + response.statusText);
         });
       },
-      requiresAuthentication: function(url) {
+      isParsable: function(url) {
         return $http({
             method: "GET",
             url: "https://feed-parser.risevision.com/" + url
           })
           .then(function(response) {
             if (response && response.data && response.data.Error) {
-              if (response.data.Error === "401 Unauthorized") {
-                return true;
-              }
+              return response.data.Error;
             }
 
-            return false;
+            return null;
           }, function(response) {
-            $log.debug("Authentication check failed with status code " + response.status + ": " + response.statusText);
+            $log.debug("Feed parser check failed with status code " + response.status + ": " + response.statusText);
 
-            return false;
+            return null;
           });
       }
     };

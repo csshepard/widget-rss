@@ -111,6 +111,10 @@
       it("Should not show authentication warning message", function () {
         expect(element(by.id("authentication")).isPresent()).to.eventually.be.false;
       });
+
+      it("Should not show not a feed warning message", function () {
+        expect(element(by.id("not-a-feed")).isPresent()).to.eventually.be.false;
+      });
     });
 
     describe("Visibility", function() {
@@ -156,6 +160,12 @@
         element(by.css("#rssUrl input[name='url']")).sendKeys("http://test.com/rss");
 
         expect(element(by.id("authentication")).isPresent()).to.eventually.be.false;
+      });
+
+      it("should not show not a feed warning when URL Field is receiving input", function() {
+        element(by.css("#rssUrl input[name='url']")).sendKeys("http://test.com/rss");
+
+        expect(element(by.id("not-a-feed")).isPresent()).to.eventually.be.false;
       });
     });
 
