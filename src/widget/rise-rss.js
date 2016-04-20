@@ -41,14 +41,18 @@ RiseVision.RSS.RiseRSS = function (data) {
       }
 
       params.error_details = errorDetails;
+      params.event_details = "rise rss error";
 
-      if (errorDetails === "401 Unauthorized") {
+      if (errorDetails.toLowerCase() === "401 unauthorized") {
         params.event_details = "feed authentication error";
         RiseVision.RSS.showError("The feed at the URL provided cannot be shown because it is " +
           "protected and requires authentication.");
       }
+      else if (errorDetails.toLowerCase() === "not a feed") {
+        RiseVision.RSS.showError("The feed at the URL provided cannot be shown because it is " +
+          "not an RSS feed.");
+      }
       else {
-        params.event_details = "rise rss error";
         RiseVision.RSS.showError("Sorry, there was a problem with the RSS feed.");
       }
 
