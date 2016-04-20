@@ -134,6 +134,16 @@
         assert.equal(document.querySelector(".message").innerHTML,
           "The feed at the URL provided cannot be shown because it is protected and requires authentication.");
       });
+
+      test("should show message that feed is not an RSS feed", function() {
+        rss.dispatchEvent(new CustomEvent("rise-rss-error", {
+          "detail": "Not a feed",
+          "bubbles": true
+        }));
+
+        assert.equal(document.querySelector(".message").innerHTML,
+          "The feed at the URL provided cannot be shown because it is not an RSS feed.");
+      });
     });
 
   });

@@ -153,6 +153,21 @@
         assert.deepEqual(spyCall.args[1], params);
       });
 
+      test("should log a rise rss error if the feed is not an RSS feed", function(done) {
+        spy = sinon.spy(RiseVision.Common.LoggerUtils, "logEvent");
+
+        rss.dispatchEvent(new CustomEvent("rise-rss-error", {
+          "detail": "Not a feed",
+          "bubbles": true
+        }));
+
+        params.error_details = "Not a feed";
+
+        assert(spy.calledOnce);
+        assert(spy.calledWith(table, params));
+        done();
+      });
+
       test("should not log a rise rss error when done is fired if the error has resolved itself on a refresh", function() {
         rss.dispatchEvent(new CustomEvent("rise-rss-error", {
           "detail": "Invalid RSS feed",
