@@ -21,23 +21,21 @@ angular.module("risevision.widget.rss.settings")
           $log.debug("Validation request failed with status code " + response.status + ": " + response.statusText);
         });
       },
-      requiresAuthentication: function(url) {
+      isParsable: function(url) {
         return $http({
             method: "GET",
             url: "https://feed-parser.risevision.com/" + url
           })
           .then(function(response) {
             if (response && response.data && response.data.Error) {
-              if (response.data.Error === "401 Unauthorized") {
-                return true;
-              }
+              return response.data.Error;
             }
 
-            return false;
+            return null;
           }, function(response) {
-            $log.debug("Authentication check failed with status code " + response.status + ": " + response.statusText);
+            $log.debug("Feed parser check failed with status code " + response.status + ": " + response.statusText);
 
-            return false;
+            return null;
           });
       }
     };
