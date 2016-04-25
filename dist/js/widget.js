@@ -1744,7 +1744,8 @@ RiseVision.RSS = (function (document, gadgets) {
   var _viewerPaused = true,
     _errorTimer = null,
     _errorLog = null,
-    _errorFlag = false;
+    _errorFlag = false,
+    _noItems = false;
 
   /*
    *  Private Methods
@@ -1756,13 +1757,15 @@ RiseVision.RSS = (function (document, gadgets) {
   function _done() {
     gadgets.rpc.call("", "rsevent_done", null, _prefs.getString("id"));
 
-    // Any errors need to be logged before the done event.
-    if (_errorLog !== null) {
-      logEvent(_errorLog, true);
-    }
+    if (!_noItems) {
+      // Any errors need to be logged before the done event.
+      if (_errorLog !== null) {
+        logEvent(_errorLog, true);
+      }
 
-    // log "done" event
-    logEvent({ "event": "done", "feed_url": _additionalParams.url }, false);
+      // log "done" event
+      logEvent({ "event": "done", "feed_url": _additionalParams.url }, false);
+    }
   }
 
   function _noFeedItems() {
@@ -1772,8 +1775,10 @@ RiseVision.RSS = (function (document, gadgets) {
       "feed_url": _additionalParams.url
     };
 
+    _noItems = true;
+
     logEvent(params, true);
-    showError("There are no items to show from this RSS feed.");
+    _done();
   }
 
   function _clearErrorTimer() {
@@ -1960,6 +1965,8 @@ RiseVision.RSS = (function (document, gadgets) {
   function onRiseRSSRefresh(feed) {
     var updated = false;
 
+    _noItems = false;
+
     if (!feed.items || feed.items.length === 0) {
       _noFeedItems();
     }
@@ -2015,15 +2022,17 @@ RiseVision.RSS = (function (document, gadgets) {
   function play() {
     _viewerPaused = false;
 
-    logEvent({ "event": "play", "feed_url": _additionalParams.url }, false);
+    if (!_noItems) {
+      logEvent({ "event": "play", "feed_url": _additionalParams.url }, false);
 
-    if (_errorFlag) {
-      _startErrorTimer();
-      return;
-    }
+      if (_errorFlag) {
+        _startErrorTimer();
+        return;
+      }
 
-    if (_content) {
-      _content.play();
+      if (_content) {
+        _content.play();
+      }
     }
   }
 
