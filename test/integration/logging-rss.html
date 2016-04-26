@@ -126,33 +126,33 @@
 
     });
 
-    suite("no feed items", function() {
+    // suite("no feed items", function() {
 
-      test("should log no feed items error when initializing", function() {
-        RiseVision.RSS.onRiseRSSInit({
-          items: []
-        });
+    //   test("should log no feed items error when initializing", function() {
+    //     RiseVision.RSS.onRiseRSSInit({
+    //       items: []
+    //     });
 
-        params.event = "error";
-        params.event_details = "no feed items";
+    //     params.event = "error";
+    //     params.event_details = "no feed items";
 
-        assert(spy.calledOnce);
-        assert(spy.calledWith(table, params));
-      });
+    //     assert(spy.calledOnce);
+    //     assert(spy.calledWith(table, params));
+    //   });
 
-      test("should log no feed items error when refreshing", function() {
-        RiseVision.RSS.onRiseRSSRefresh({
-          items: []
-        });
+    //   test("should log no feed items error when refreshing", function() {
+    //     RiseVision.RSS.onRiseRSSRefresh({
+    //       items: []
+    //     });
 
-        params.event = "error";
-        params.event_details = "no feed items";
+    //     params.event = "error";
+    //     params.event_details = "no feed items";
 
-        assert(spy.calledOnce);
-        assert(spy.calledWith(table, params));
-      });
+    //     assert(spy.calledOnce);
+    //     assert(spy.calledWith(table, params));
+    //   });
 
-    });
+    // });
 
   });
 

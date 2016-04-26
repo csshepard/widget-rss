@@ -296,7 +296,10 @@ RiseVision.RSS = (function (document, gadgets) {
   function play() {
     _viewerPaused = false;
 
-    if (!_noItems) {
+    if (_noItems) {
+      _done();
+    }
+    else {
       logEvent({ "event": "play", "feed_url": _additionalParams.url }, false);
 
       if (_errorFlag) {
