@@ -75,6 +75,7 @@
       "transition": {
         type: "scroll",
         duration: 10,
+        direction: "up",
         pud: 10,
         resume: 5,
         speed: "medium"
