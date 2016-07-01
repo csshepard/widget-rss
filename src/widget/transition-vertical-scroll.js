@@ -89,9 +89,10 @@ RiseVision.RSS.TransitionVerticalScroll = function (params, content) {
 
     // apply auto scroll
     $scrollContainer.autoScroll({
-     "by": (params.transition.type === "scroll") ? "continuous" : "page",
-     "speed": params.transition.speed,
-     "pause": params.transition.resume
+      "by": (params.transition.type === "scroll") ? "continuous" : "page",
+      "speed": params.transition.speed,
+      "duration": params.transition.duration,
+      "pause": params.transition.resume
     }).on("done", function () {
       _onScrollDone();
     });
