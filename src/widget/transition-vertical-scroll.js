@@ -32,6 +32,9 @@ RiseVision.RSS.TransitionVerticalScroll = function (params, content) {
     var $scrollContainer = _getScrollEl();
 
     if ($scrollContainer) {
+      // remove the "done" event handler before destroying
+      $("#container").autoScroll().off("done", _onScrollDone);
+      // destroy the auto scroll instance
       $scrollContainer.destroy();
 
       // ensure page visibility is back on from possible previous fade out (scroll complete)
@@ -93,9 +96,7 @@ RiseVision.RSS.TransitionVerticalScroll = function (params, content) {
       "speed": params.transition.speed,
       "duration": params.transition.duration,
       "pause": params.transition.resume
-    }).on("done", function () {
-      _onScrollDone();
-    });
+    }).on("done", _onScrollDone);
   }
 
   /*
