@@ -103,4 +103,7 @@ body {
 
 #layout-16x9 .image {
   display: block;
+  margin: 0px;
+  margin-left: auto;
+  margin-right: auto;
 }
