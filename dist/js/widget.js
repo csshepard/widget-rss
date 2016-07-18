@@ -1,5 +1,5 @@
 /*
- *	jQuery dotdotdot 1.8.2
+ *	jQuery dotdotdot 1.8.3
  *
  *	Copyright (c) Fred Heusschen
  *	www.frebsite.nl
@@ -509,7 +509,14 @@
 				setTextContent( e, txt );
 				if ( afterLength && after )
 				{
+					var $parent = after.parent();
+
 					$(e).parent().append( after );
+
+					if ( !$.trim( $parent.html() ) )
+					{
+						$parent.remove();
+					}
 				}
 			}
 		}
@@ -2547,10 +2554,17 @@ RiseVision.RSS.TransitionVerticalScroll = function (params, content) {
     $(".item").removeClass("hide");
   }
 
+  // If there is not enough content to scroll, use the PUD Failover setting as the trigger
+  // for sending "done".
   function _startPUDTimer() {
-    // If there is not enough content to scroll, use the PUD Failover setting as the trigger
-    // for sending "done".
-    var delay = params.transition.pud  * 1000;
+    var delay;
+
+    if ((params.transition.pud === undefined) || (params.transition.pud < 1)) {
+      delay = 10000;
+    }
+    else {
+      delay = params.transition.pud * 1000;
+    }
 
     if (!_pudTimerID) {
       _pudTimerID = setTimeout(function() {
