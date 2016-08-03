@@ -80,6 +80,10 @@ body {
   height: 100%;
 }
 
+#messageContainer .error-link {
+  color: blue;
+}
+
 #scroller {
   display: none;
 }
