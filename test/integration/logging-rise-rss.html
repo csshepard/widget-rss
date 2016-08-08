@@ -205,6 +205,23 @@
         assert(spy.calledWith(table, params));
         done();
       });
+
+      test("should log a feed not found error", function(done) {
+        spy = sinon.spy(RiseVision.Common.LoggerUtils, "logEvent");
+
+        rss.dispatchEvent(new CustomEvent("rise-rss-error", {
+          "detail": "404 Not Found",
+          "bubbles": true
+        }));
+
+        params.event = "error";
+        params.event_details = "feed not found";
+        params.error_details = "404 Not Found";
+
+        assert(spy.calledOnce);
+        assert(spy.calledWith(table, params));
+        done();
+      });
     });
 
   });

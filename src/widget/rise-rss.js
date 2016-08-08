@@ -48,6 +48,10 @@ RiseVision.RSS.RiseRSS = function (data) {
         RiseVision.RSS.showError("The feed at the URL provided cannot be shown because it is " +
           "protected and requires authentication.");
       }
+      else if (errorDetails.toLowerCase() === "404 not found") {
+        params.event_details = "feed not found";
+        RiseVision.RSS.showError("The feed URL <span class='error-link'>" + data.url + "</span> could not be found.");
+      }
       else if (errorDetails.toLowerCase() === "not a feed") {
         RiseVision.RSS.showError("The URL provided is not an RSS feed.");
       }
