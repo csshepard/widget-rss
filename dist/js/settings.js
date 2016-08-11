@@ -11434,9 +11434,7 @@ var WIDGET_SETTINGS_UI_CONFIG = {
       "Terminal=terminal,monaco,monospace;" +
       "Times New Roman=times new roman,times,serif;" +
       "Trebuchet MS=trebuchet ms,geneva,sans-serif;" +
-      "Verdana=verdana,geneva,sans-serif;" +
-      "Webdings=webdings;" +
-      "Wingdings=wingdings,zapf dingbats;",
+      "Verdana=verdana,geneva,sans-serif;",
   "sizes": "8px 9px 10px 11px 12px 14px 18px 24px 30px 36px 48px 60px 72px 96px"
 };
 
@@ -11641,7 +11639,8 @@ module.run(["$templateCache", function($templateCache) {
         restrict: "AE",
         scope: {
           fontData: "=",
-          previewText: "@"
+          previewText: "@",
+          verticalAlign: "@"
         },
         template: $templateCache.get("_angular/font-setting/font-setting.html"),
         transclude: false,
@@ -11662,6 +11661,7 @@ module.run(["$templateCache", function($templateCache) {
             size: "24px",
             customSize: "",
             align: "left",
+            verticalAlign: "middle",
             bold: false,
             italic: false,
             underline: false,
@@ -11785,8 +11785,14 @@ module.run(["$templateCache", function($templateCache) {
                */
               skin_url: "//s3.amazonaws.com/rise-common/styles/tinymce/rise",
               statusbar: false,
-              toolbar: "fontselect fontsizeselect | alignleft aligncenter alignright alignjustify | forecolor backcolor | bold italic underline",
+              toolbar: "fontselect fontsizeselect | alignleft aligncenter alignright alignjustify" +
+              ($scope.verticalAlign ? " aligntop alignmiddle alignbottom" : "") +
+              " | forecolor backcolor | bold italic underline",
               setup: function(editor) {
+                if ($scope.verticalAlign) {
+                  addVerticalAlignButtons(editor);
+                }
+
                 editor.on("init", function() {
                   initToolbar(editor);
                   _isLoading = false;
@@ -11856,6 +11862,11 @@ module.run(["$templateCache", function($templateCache) {
                   break;
               }
 
+              // Vertical Alignment
+              if ($scope.verticalAlign) {
+                editor.execCommand("mceToggleVertical", false, $scope.fontData.verticalAlign);
+              }
+
               // Colors
               $element.find(".mce-colorbutton[aria-label='Text color'] span").css("background-color", $scope.fontData.forecolor);
               $element.find(".mce-colorbutton[aria-label='Background color'] span").css("background-color", $scope.fontData.backcolor);
@@ -11923,6 +11934,20 @@ module.run(["$templateCache", function($templateCache) {
 
               case "JustifyFull":
                 $scope.fontData.align = "justify";
+                break;
+
+              case "mceToggleVertical":
+                if (args.value) {
+                  toggleVerticalButtons(args.value);
+                  if ($scope.fontData.verticalAlign !== args.value) {
+                    toggleVerticalButtons($scope.fontData.verticalAlign);
+                  }
+                } else {
+                  toggleVerticalButtons($scope.defaultFont.verticalAlign);
+                }
+
+                $scope.fontData.verticalAlign = (args.value) ? args.value : $scope.defaultFont.verticalAlign;
+
                 break;
 
               case "forecolor":
@@ -12010,6 +12035,51 @@ module.run(["$templateCache", function($templateCache) {
               sheet.addRule("@font-face", rule);
             }
           }
+
+          function addVerticalAlignButtons(editor) {
+            editor.addButton("aligntop", {
+              image: "//s3.amazonaws.com/Rise-Images/Icons/align-top.svg",
+              tooltip: "Align Top",
+              onclick: function () {
+                editor.execCommand("mceToggleVertical", false, "top");
+              }
+            });
+
+            editor.addButton("alignmiddle", {
+              image: "//s3.amazonaws.com/Rise-Images/Icons/align-vertical-middle.svg",
+              tooltip: "Align Middle",
+              onclick: function () {
+                editor.execCommand("mceToggleVertical", false, "middle");
+              }
+            });
+
+            editor.addButton("alignbottom", {
+              image: "//s3.amazonaws.com/Rise-Images/Icons/align-bottom.svg",
+              tooltip: "Align Bottom",
+              onclick: function () {
+                editor.execCommand("mceToggleVertical", false, "bottom");
+              }
+            });
+
+            editor.addCommand("mceToggleVertical", function () {});
+
+          }
+
+          function toggleVerticalButtons(value) {
+            switch(value) {
+              case "top":
+                toggleButton($element.find(".mce-btn[aria-label='Align Top']"));
+                break;
+              case "middle":
+                toggleButton($element.find(".mce-btn[aria-label='Align Middle']"));
+                break;
+              case "bottom":
+                toggleButton($element.find(".mce-btn[aria-label='Align Bottom']"));
+                break;
+              default:
+                break;
+            }
+          }
         }
       };
     }]);
@@ -12075,7 +12145,7 @@ module.run(["$templateCache", function($templateCache) {
     "<div class=\"font-setting\">\n" +
     "  <div class=\"row\">\n" +
     "    <div class=\"col-md-12\">\n" +
-    "      <div class=\"{'form-group': !previewText}\">\n" +
+    "      <div ng-class=\"{'form-group': !previewText}\">\n" +
     "        <textarea ui-tinymce=\"tinymceOptions\" ng-model=\"tinymceModel\" ng-if=\"tinymceOptions\"></textarea>\n" +
     "      </div>\n" +
     "    </div>\n" +
