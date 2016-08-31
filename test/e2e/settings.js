@@ -204,7 +204,8 @@
                 "italic":false,
                 "underline":false,
                 "forecolor":"black",
-                "backcolor":"transparent"
+                "backcolor":"transparent",
+                "verticalAlign": "middle"
               }
             },
             "story":{
@@ -221,7 +222,8 @@
                 "italic":false,
                 "underline":false,
                 "forecolor":"black",
-                "backcolor":"transparent"
+                "backcolor":"transparent",
+                "verticalAlign": "middle"
               }
             },
             "timestamp":{
@@ -238,7 +240,8 @@
                 "italic":false,
                 "underline":false,
                 "forecolor":"#969696",
-                "backcolor":"transparent"
+                "backcolor":"transparent",
+                "verticalAlign": "middle"
               }
             },
             "author":{
@@ -255,7 +258,8 @@
                 "italic":false,
                 "underline":false,
                 "forecolor":"#969696",
-                "backcolor":"transparent"
+                "backcolor":"transparent",
+                "verticalAlign": "middle"
               }
             },
             "transition": {
@@ -352,7 +356,8 @@
               "italic":false,
               "underline":false,
               "forecolor":"black",
-              "backcolor":"transparent"
+              "backcolor":"transparent",
+              "verticalAlign": "middle"
             }
           },
           "timestamp":{
